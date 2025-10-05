@@ -1,5 +1,8 @@
 const { Telegraf } = require('telegraf');
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const express = require('express');
+const token=process.env.BOT_TOKEN;
+const bot = new Telegraf(token);
+const app = express();
 
 const { getRandomJob } = require("./jobs");
 const {
@@ -8,6 +11,16 @@ const {
     canLuckBet, getLuckBetRemainingTime, luck100
 } = require("./users");
 
+
+app.use(bot.webhookCallback('/webhook'));
+
+
+// تعيين Webhook عند التشغيل
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, async () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  await bot.telegram.setWebhook(`${process.env.RENDER_EXTERNAL_URL}/webhook`);
+});
 
 // ======= واجهة استعلامات =======
 bot.hears(/^(اوامر|help)$/i, (ctx) => {
@@ -118,5 +131,5 @@ bot.hears("تصنيف", (ctx) => {
 });
 
 // تشغيل البوت
-bot.launch().then(()=>console.log("bot is running")).catch((err) => console.log("bot is running",err));
+bot.launch().then(() => console.log("bot is running")).catch((err) => console.log("bot is running", err));
 

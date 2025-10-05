@@ -7,6 +7,14 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "express": "^5.1.0",
     "telegraf": "^4.16.3"
-  }
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
