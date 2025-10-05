@@ -110,9 +110,10 @@ function luck100(userId, amount, name) {
   if (isNaN(amount) || amount <= 0) return { success: false, msg: "🚫 الرجاء إدخال مبلغ صحيح." };
   if (amount > user.balance) return { success: false, msg: "🚫 الرهان أكبر من رصيدك الحالي." };
 
-  const win = Math.random() < 0.5; // 50% فوز أو خسارة
-  const change = win ? amount : -amount;
+  // نسبة متساوية: 50% فوز و50% خسارة
+  const win = Math.random() < 0.5 ? true : false;
 
+  const change = win ? amount : -amount;
   user.balance += change;
   user.lastLuckBet = Date.now();
   user.name = name || user.name;
@@ -127,6 +128,7 @@ function luck100(userId, amount, name) {
     newBalance: user.balance
   };
 }
+
 
 // ======= الرصيد =======
 function getBalance(userId) {
