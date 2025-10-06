@@ -1,4 +1,6 @@
+
 const User = require('../models/User');
+
 
 async function findOrCreateUser(telegramId) {
   let user = await User.findOne({ telegramId });
@@ -24,7 +26,9 @@ async function setJob(telegramId, job) {
 }
 
 async function getUsers() {
-  return User.find().sort({ balance: -1 });
+  return await User.find().sort({ balance: -1 }); // ترتيب حسب الرصيد تنازلي
 }
 
-module.exports = { findOrCreateUser, addBalance, setJob, getUsers };
+
+
+module.exports = { findOrCreateUser, addBalance, setJob, getUsers, };

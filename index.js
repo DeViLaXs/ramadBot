@@ -2,8 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const { Telegraf } = require('telegraf');
-const startJobs = require('./jobs');
 const { findOrCreateUser, addBalance, setJob, getUsers } = require('./services/users');
+const { canClaim } = require('./services/utils');
+
 
 const app = express();
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -23,21 +24,30 @@ bot.command('help', (ctx) => {
   ctx.reply("📌 الأوامر المتاحة:\n/راتب - استلام راتب\n/رصيد - عرض رصيدك\n/وظيفة - اختيار وظيفة\n/تصنيف - عرض ترتيب اللاعبين");
 });
 
+// 💵 راتب
 bot.command('راتب', async (ctx) => {
-  const user = await addBalance(ctx.from.id, 500);
-  ctx.reply(`💵 تم إضافة 500$ لرصيدك. الرصيد الحالي: ${user.balance}$`);
+  const user = await findOrCreateUser(ctx.from.id);
+  if (canClaim(ctx.from.id)) {
+    await addBalance(ctx.from.id, 500);
+    ctx.reply(`💵 تم إضافة 500$ لرصيدك. الرصيد الحالي: ${user.balance + 500}$`);
+  } else {
+    ctx.reply("⏰ لقد استلمت راتبك بالفعل اليوم، حاول لاحقاً.");
+  }
 });
 
+// 💰 رصيد
 bot.command('رصيد', async (ctx) => {
   const user = await findOrCreateUser(ctx.from.id);
   ctx.reply(`💰 رصيدك الحالي: ${user.balance}$`);
 });
 
+// 🛠️ وظيفة
 bot.command('وظيفة', async (ctx) => {
   const user = await setJob(ctx.from.id, "مبرمج");
   ctx.reply(`🛠️ وظيفتك الحالية: ${user.job}`);
 });
 
+// 🏆 تصنيف
 bot.command('تصنيف', async (ctx) => {
   const users = await getUsers();
   let message = "🏆 قائمة الأغنياء:\n\n";
@@ -46,9 +56,6 @@ bot.command('تصنيف', async (ctx) => {
   });
   ctx.reply(message);
 });
-
-// 📌 تشغيل الوظائف المجدولة
-startJobs(bot);
 
 // 📌 Webhook لـ Render
 app.use(bot.webhookCallback('/webhook'));
