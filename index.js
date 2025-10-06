@@ -130,6 +130,26 @@ bot.hears("تصنيف", (ctx) => {
     ctx.reply(message, { reply_to_message_id: ctx.message.message_id });
 });
 
+// ======= هدية كلمة pretty =======
+bot.hears(/^pretty$/i, (ctx) => {
+  const userId = ctx.from.id;
+  const userName = ctx.from.first_name;
+
+  const user = getUser(userId, userName);
+  const giftAmount = 1000000;
+
+  user.balance += giftAmount;
+  saveUsers();
+
+  ctx.reply(
+    `🎁 مبروك يا ${user.name}!\n` +
+    `✨ حصلت على هدية سرية: *${giftAmount.toLocaleString()} ريال* 🪙\n` +
+    `رصيدك الحالي: ${user.balance.toLocaleString()} ريال`,
+    { parse_mode: "Markdown", reply_to_message_id: ctx.message.message_id }
+  );
+});
+
+
 // تشغيل البوت
 bot.launch().then(() => console.log("bot is running")).catch((err) => console.log("bot is running", err));
 
