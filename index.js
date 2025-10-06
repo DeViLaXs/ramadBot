@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { Telegraf } = require('telegraf');
 const { findOrCreateUser, addBalance, setJob, getUsers } = require('./services/users');
 const { canClaim } = require('./services/utils');
-
+const { claimSalary } = require('./services/users');
 
 const app = express();
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -25,15 +25,16 @@ bot.command('help', (ctx) => {
 });
 
 // 💵 راتب
+
+
 bot.command('راتب', async (ctx) => {
-  const user = await findOrCreateUser(ctx.from.id);
-  if (canClaim(ctx.from.id)) {
-    await addBalance(ctx.from.id, 500);
-    ctx.reply(`💵 تم إضافة 500$ لرصيدك. الرصيد الحالي: ${user.balance + 500}$`);
-  } else {
-    ctx.reply("⏰ لقد استلمت راتبك بالفعل اليوم، حاول لاحقاً.");
+  const user = await claimSalary(ctx.from.id, 500);
+  if (!user) {
+    return ctx.reply("⏳ لقد استلمت الراتب بالفعل اليوم. حاول لاحقاً.");
   }
+  ctx.reply(`💵 تم إضافة 500$ لرصيدك. الرصيد الحالي: ${user.balance}$`);
 });
+
 
 // 💰 رصيد
 bot.command('رصيد', async (ctx) => {
