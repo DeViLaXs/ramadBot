@@ -111,3 +111,18 @@
 //   canInvest, invest, getInvestRemainingTime,
 //   canLuckBet, getLuckBetRemainingTime, luck100, getLeaderboard
 // };
+
+
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+  userId: { type: String, unique: true },
+  name: String,
+  balance: { type: Number, default: 0 },
+  lastClaim: { type: Number, default: 0 },
+  lastInvest: { type: Number, default: 0 },
+  lastLuckBet: { type: Number, default: 0 }
+});
+
+module.exports = mongoose.model("User", userSchema);
+
